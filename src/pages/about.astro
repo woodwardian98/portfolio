@@ -1,17 +1,70 @@
+---
+const pageTitle = "About Me"
+const identity = {
+    firstName  :"Ian",
+    lastName   :"Woodward",
+    country    :"United States",
+    occupation :"Freelance Cybersecurity Auditor",
+    hobbies    :["programming", "reading", "outdoors activities", "weight lifting"]
+}
+const skills = ["JavaScript", "TypeScript", "HTML", "CSS", "Python", "React", "Node.js", "GraphQL", "Docker", "AWS"]
+const happy = true;
+const finished = false;
+const goal = 3;
+const skillColor = "crimson";
+const fontWeight = "bold";
+const textCase   = "Uppercase";
+---
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} >
+    <title>{pageTitle}</title>
+    <style define:vars={{skillColor}}>
+  h1 {
+    color: purple;
+    font-size: 4rem;
+  }
+  .skill {
+    color: var(--skillColor);
+    font-weight: var(--fontWeight);
+    text-transform: var(--textCase:);
+  }
+</style>
+  </head>
+        <style>
+      background{
+        color     :black
+      }
+      h1 {
+        color     : purple;
+        font-size : 4rem;
+      } 
+      .skill {
+        color : var(--skillcolor)
+      }
+    </style>
     <a href="/">Home</a>
     <a href="/about/">About</a>
     <a href="/blog/">Blog</a>
     <title>Ian Woodward Portfolio</title>
   </head>
   <body>
-    <h1>About Me</h1>
+    <h1>{pageTitle}</h1>
     <h2>Hi, I'm Ian Woodward</h2>
     <p>I am a cybersecurity consultant graduated from Wentworth Institute of Technology class of 2023 </p>
-    <p>I have experience in the field of cybersecurity and have worked on various projects to improve security measures.</p>
+    <p>I have experience in the field of cybersecurity and have worked on various projects to improve security measures. My primary knowlege stems from the NIST Cybersecurty Framwork, a comprehensive breakdown of how a company needs to evolve their security measures.</p>
     <p>I am passionate about cybersecurity and I believe that it is important for individuals to stay up-to-date with the latest trends and technologies in the industry. I am excited to continue learning and growing as a cybersecurity professional, and I look forward to working with you on any projects or audits that your team needs to thrive in the cyber landscape!</p>
+  </body>
+<p>Here are a few facts about me:</p>
+<ul>
+  <li>My name is {identity.firstName}.</li>
+  <li>I live in {identity.country} and I work as a {identity.occupation}.</li>
+  {identity.hobbies.length >= 2 &&
+    <li>Three of my hobbies are: {identity.hobbies[0]},{identity.hobbies[1]}, and {identity.hobbies[2]}</li>
+  }
+</ul>
+<p>My skills are:</p>
+<ul>
+  {skills.map((skill) => <li class="skill">{skill}</li>)}
+</ul>
