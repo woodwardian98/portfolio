@@ -1,0 +1,13 @@
+{
+  "name": "@workspace/config-tailwind",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "main": "./base.config.js",
+  "exports": {
+    ".": "./base.config.js"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.4.18"
+  }
+}

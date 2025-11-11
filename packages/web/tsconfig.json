@@ -1,0 +1,25 @@
+{
+  "extends": "../config/typescript/base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "preact",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@workspace/ui": ["../ui/src/index.ts"],
+      "@workspace/ui/*": ["../ui/src/*"],
+      "@workspace/utils": ["../utils/src/index.ts"],
+      "@workspace/utils/*": ["../utils/src/*"]
+    },
+    "composite": true
+  },
+  "include": [
+    "src",
+    "astro.config.mjs",
+    "tailwind.config.js",
+    "vite.config.*",
+    "env.d.ts",
+    "../utils/src/**/*"
+  ],
+  "exclude": ["node_modules", "dist", ".astro"]
+}

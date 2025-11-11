@@ -1,0 +1,9 @@
+{
+  "name": "@workspace/config-typescript",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./base.json",
+  "exports": {
+    ".": "./base.json"
+  }
+}
