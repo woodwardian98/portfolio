@@ -1,28 +1,22 @@
 {
-  "name": "visible-venus",
-  "type": "module",
+  "name": "@workspace/root",
   "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "packages/config/*"
+  ],
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@astrojs/mdx": "^4.3.7",
-    "@astrojs/rss": "^4.0.12",
-    "@astrojs/sitemap": "^3.6.0",
-    "@astrojs/tailwind": "^6.0.2",
-    "astro": "^5.14.4",
-    "preact": "^10.27.2",
-    "sharp": "^0.34.3"
+    "dev": "npm run dev --workspace=@workspace/web",
+    "build": "npm run build --workspaces --if-present",
+    "preview": "npm run preview --workspace=@workspace/web",
+    "dev:web": "npm run dev --workspace=@workspace/web",
+    "build:web": "npm run build --workspace=@workspace/web",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "clean": "rm -rf packages/*/dist packages/*/.astro packages/*/node_modules node_modules"
   },
   "devDependencies": {
-    "@types/estree": "^1.0.8",
-    "autoprefixer": "^10.4.21",
-    "daisyui": "^5.3.0",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.18",
     "typescript": "^5.9.3"
   }
 }
