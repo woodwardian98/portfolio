@@ -1,0 +1,70 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+---
+
+<PageLayout title="Login" description="Login to access protected areas.">
+  <Container>
+    <div class="animate max-w-lg mx-auto">
+      <h1 class="text-2xl font-semibold mb-6 text-black dark:text-white">Admin Login</h1>
+      <form id="login-form" class="space-y-4 p-4 border rounded-md bg-zinc-100 dark:bg-zinc-800 dark:border-zinc-700">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <input type="email" name="email" id="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-600">
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+          <input type="password" name="password" id="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-600">
+        </div>
+        <div id="error-message" class="hidden p-3 bg-red-100 text-red-700 border border-red-300 rounded-md"></div>
+        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Login
+        </button>
+      </form>
+    </div>
+  </Container>
+</PageLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('login-form');
+    const errorMessageDiv = document.getElementById('error-message');
+
+    if (form && errorMessageDiv) {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        errorMessageDiv.classList.add('hidden');
+
+        const formData = new FormData(form as HTMLFormElement);
+        const email = formData.get('email');
+        const password = formData.get('password');
+
+        try {
+          const response = await fetch('import.meta.env.PUBLIC_API_URL/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.token) {
+              localStorage.setItem('jwt', data.token);
+              window.location.href = '/customers'; // Redirect to customers page
+            }
+          } else {
+            const errorData = await response.json();
+            errorMessageDiv.textContent = errorData.message || 'Login failed. Please check your credentials.';
+            errorMessageDiv.classList.remove('hidden');
+          }
+        } catch (error) {
+          console.error('Error submitting form:', error);
+          errorMessageDiv.textContent = 'An error occurred during login.';
+          errorMessageDiv.classList.remove('hidden');
+        }
+      });
+    }
+  });
+</script>

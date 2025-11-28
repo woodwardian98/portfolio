@@ -1,24 +1,27 @@
-# build output
-dist/
-# generated types
-.astro/
+# Dependencies
+/node_modules
+/backend/node_modules
+/astro-nano/node_modules
 
-# dependencies
-node_modules/
+# Build output
+/dist
+/astro-nano/dist
+/.astro
 
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-
-# environment variables
+# Environment variables
 .env
-.env.production
+.env.*
+!.env.example
 
-# macOS-specific files
+# Log files
+*.log
+error.log
+combined.log
+
+# System files
 .DS_Store
+Thumbs.db
 
-# jetbrains setting folder
-.idea/
+# Temp directories
+.mypy_cache
+/backend/.sequelizerc

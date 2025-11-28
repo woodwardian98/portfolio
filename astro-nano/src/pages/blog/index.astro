@@ -1,0 +1,115 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import { BLOG } from "@consts";
+
+// Fetch posts from the backend API
+// const response = await fetch('http://localhost:3000/api/posts');
+// // Assert the type of 'data' to fix the 'any' type issue
+// const data = await response.json() as Post[];
+
+const data = [
+  {
+    id: 1,
+    title: "Mock Post 1",
+    slug: "mock-post-1",
+    description: "This is a mock post.",
+    content: "Content of mock post 1.",
+    isPublished: true,
+    createdAt: "2024-01-15T10:00:00Z",
+    updatedAt: "2024-01-15T10:00:00Z",
+    UserId: 1
+  },
+  {
+    id: 2,
+    title: "Mock Post 2",
+    slug: "mock-post-2",
+    description: "Another mock post.",
+    content: "Content of mock post 2.",
+    isPublished: true,
+    createdAt: "2024-02-20T11:00:00Z",
+    updatedAt: "2024-02-20T11:00:00Z",
+    UserId: 1
+  }
+] as Post[];
+
+// Original type from the API
+type Post = {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  content: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+  UserId: number;
+}
+
+// New type for the transformed object we are creating
+type TransformedEntry = {
+  collection: 'blog';
+  slug: string;
+  data: {
+    title: string;
+    description: string;
+    date: Date;
+  };
+};
+
+// Type for the accumulator (the final 'posts' object)
+type Acc = {
+  [year: string]: TransformedEntry[];
+}
+
+// Use the generic <Acc> and nullish coalescing (??=)
+const posts = data.reduce<Acc>((acc, post: Post) => {
+    const year = new Date(post.createdAt).getFullYear().toString();
+    
+    // If acc[year] is null/undefined, set it to []. Then push.
+    (acc[year] ??= []).push({
+      collection: 'blog',
+      slug: post.slug,
+      data: {
+        title: post.title,
+        description: post.description,
+        date: new Date(post.createdAt)
+      }
+    });
+    return acc;
+  }, {}); // This initial value is correctly typed as Acc
+
+const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
+---
+
+<PageLayout title={BLOG.TITLE} description={BLOG.DESCRIPTION}>
+  <Container>
+    <div class="space-y-10">
+      <div class="animate font-semibold text-black dark:text-white">
+        Blog
+      </div>
+      <div class="space-y-4">
+        {years.map(year => (
+          <section class="animate space-y-4">
+            <div class="font-semibold text-black dark:text-white">
+              {year}
+            </div>
+            <div>
+              <ul class="flex flex-col gap-4">
+                {
+                  // Types are now inferred, so no casting is needed here
+                  posts[year].map((Post) => (
+                    <li>
+                      <ArrowCard entry={Post}/>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </Container>
+</PageLayout>

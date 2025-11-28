@@ -1,0 +1,38 @@
+---
+import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
+import { SITE } from "@consts";
+---
+
+<header>
+  <a href="#main-content" class="sr-only focus:not-sr-only">Skip to main content</a>
+  <Container>
+    <div class="flex flex-wrap gap-y-2 justify-between">
+      <Link href="/" underline={false}>
+        <div class="font-semibold">
+          {SITE.NAME}
+        </div>
+      </Link>
+      <nav class="flex gap-1">
+        <Link href="/blog">
+          blog
+        </Link>
+        <span aria-hidden="true">
+          {`/`}
+        </span>        <Link href="/work">
+          work
+        </Link>
+        <span aria-hidden="true">
+          {`/`}
+        </span>        <Link href="/projects">
+          projects
+        </Link>
+        <span aria-hidden="true">
+          {`/`}
+        </span>        <Link href="/documentation">
+          documentation
+        </Link>
+      </nav>
+    </div>
+  </Container>
+</header>

@@ -1,0 +1,193 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+---
+
+<PageLayout title="Customers" description="A list of customers managed in the system.">
+  <Container>
+    <div class="space-y-10">
+      <div class="animate font-semibold text-black dark:text-white text-2xl">
+        Customer Management
+      </div>
+
+      <div id="error-message" class="hidden p-4 border rounded-md bg-red-100 text-red-800 border-red-300">
+        <h3 class="font-bold">Could not load customer data</h3>
+        <p id="error-text" class="text-sm"></p>
+      </div>
+
+      <!-- Customer List will be rendered here by client-side script -->
+      <ul id="customer-list" class="animate flex flex-col gap-4">
+        <!-- Loading state -->
+         <li class="p-4 border rounded-md bg-zinc-100 dark:bg-zinc-800 dark:border-zinc-700 shadow-sm">
+            <p>Loading customers...</p>
+         </li>
+      </ul>
+
+      <!-- Add Customer Form -->
+      <div class="animate">
+        <h2 class="text-xl font-semibold mb-4 text-black dark:text-white">Add New Customer</h2>
+        <form id="add-customer-form" class="space-y-4 max-w-lg p-4 border rounded-md bg-zinc-100 dark:bg-zinc-800 dark:border-zinc-700">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+            <input type="text" name="name" id="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-600">
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+            <input type="email" name="email" id="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-600">
+          </div>
+          <div>
+            <label for="company" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company</label>
+            <input type="text" name="company" id="company" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-600">
+          </div>
+          <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Add Customer
+          </button>
+        </form>
+      </div>
+    </div>
+  </Container>
+</PageLayout>
+
+<script>
+  // Helper to decode JWT
+  function decodeJwt(token) {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Helper to render customer list
+  function renderCustomerList(customers) {
+    const customerList = document.getElementById('customer-list');
+    if (!customerList) return;
+
+    customerList.innerHTML = ''; // Clear loading state or old data
+
+    if (customers.length === 0) {
+      const noCustomersDiv = document.createElement('div');
+      noCustomersDiv.className = 'p-4 border rounded-md bg-zinc-100 dark:bg-zinc-800 dark:border-zinc-700';
+      const p = document.createElement('p');
+      p.textContent = 'No customers found. Try adding one!';
+      noCustomersDiv.appendChild(p);
+      customerList.appendChild(noCustomersDiv);
+      return;
+    }
+
+    customers.forEach(customer => {
+      const li = document.createElement('li');
+      li.className = 'p-4 border rounded-md bg-zinc-100 dark:bg-zinc-800 dark:border-zinc-700 shadow-sm';
+
+      const containerDiv = document.createElement('div');
+      containerDiv.className = 'flex justify-between items-start';
+
+      const infoDiv = document.createElement('div');
+      
+      const nameH3 = document.createElement('h3');
+      nameH3.className = 'font-semibold text-lg text-black dark:text-white';
+      nameH3.textContent = customer.name;
+
+      const emailP = document.createElement('p');
+      emailP.className = 'text-sm text-gray-600 dark:text-gray-400';
+      emailP.textContent = customer.email;
+
+      const companyP = document.createElement('p');
+      companyP.className = 'text-sm text-gray-600 dark:text-gray-400';
+      companyP.textContent = `Company: ${customer.company || 'N/A'}`;
+
+      infoDiv.appendChild(nameH3);
+      infoDiv.appendChild(emailP);
+      infoDiv.appendChild(companyP);
+
+      const statusSpan = document.createElement('span');
+      const statusClass = customer.status === 'active' ? 'bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-100' :
+                        customer.status === 'lead' ? 'bg-yellow-200 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100' :
+                        'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-200';
+      statusSpan.className = `mt-1 inline-block px-2 py-1 text-xs font-semibold rounded-full ${statusClass}`;
+      statusSpan.textContent = customer.status;
+
+      containerDiv.appendChild(infoDiv);
+      containerDiv.appendChild(statusSpan);
+      li.appendChild(containerDiv);
+      customerList.appendChild(li);
+    });
+  }
+
+  // Main logic on page load
+  document.addEventListener('DOMContentLoaded', async () => {
+    const token = localStorage.getItem('jwt');
+    const errorDiv = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
+
+    if (!token) {
+      window.location.href = '/login';
+      return;
+    }
+
+    const decodedToken = decodeJwt(token);
+    if (!decodedToken || decodedToken.role !== 'admin') {
+      alert('Forbidden: You do not have permission to view this page.');
+      window.location.href = '/'; // Redirect to home page
+      return;
+    }
+    
+    // Fetch customers
+    try {
+      const response = await fetch('import.meta.env.PUBLIC_API_URL/api/customers', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const customers = await response.json();
+        renderCustomerList(customers);
+      } else {
+        const errorData = await response.json();
+        if (errorDiv && errorText) {
+            errorText.textContent = errorData.message || 'Failed to fetch customers.';
+            errorDiv.classList.remove('hidden');
+        }
+      }
+    } catch (e) {
+      if (errorDiv && errorText) {
+          errorText.textContent = 'An error occurred while fetching data. Is the backend server running?';
+          errorDiv.classList.remove('hidden');
+      }
+    }
+
+    // Handle form submission
+    const form = document.getElementById('add-customer-form');
+    if (form) {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form as HTMLFormElement);
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const company = formData.get('company');
+
+        try {
+          const response = await fetch('import.meta.env.PUBLIC_API_URL/api/customers', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}` // Add token to request
+            },
+            body: JSON.stringify({ name, email, company }),
+          });
+
+          if (response.ok) {
+            location.reload(); // Simple refresh to see the new customer
+          } else {
+            const errorData = await response.json();
+            alert(`Failed to add customer: ${errorData.message}`);
+          }
+        } catch (error) {
+          console.error('Error submitting form:', error);
+          alert('An error occurred while adding the customer.');
+        }
+      });
+    }
+  });
+</script>

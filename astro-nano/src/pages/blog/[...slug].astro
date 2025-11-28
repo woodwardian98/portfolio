@@ -1,0 +1,81 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import { readingTime } from "@lib/utils";
+import BackToPrev from "@components/BackToPrev.astro";
+
+export async function getStaticPaths() {
+  const posts = [
+    {
+      id: 1,
+      title: "Mock Post 1",
+      slug: "mock-post-1",
+      description: "This is a mock post.",
+      content: "Content of mock post 1.",
+      isPublished: true,
+      createdAt: "2024-01-15T10:00:00Z",
+      updatedAt: "2024-01-15T10:00:00Z",
+      UserId: 1
+    },
+    {
+      id: 2,
+      title: "Mock Post 2",
+      slug: "mock-post-2",
+      description: "Another mock post.",
+      content: "Content of mock post 2.",
+      isPublished: true,
+      createdAt: "2024-02-20T11:00:00Z",
+      updatedAt: "2024-02-20T11:00:00Z",
+      UserId: 1
+    }
+  ];
+  return posts.map((post: Post) => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
+}
+
+type Post = {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  content: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+  UserId: number;
+}
+
+type Props = Post;
+
+const post = Astro.props;
+---
+
+<PageLayout title={post.title} description={post.description}>
+  <Container>
+    <div class="animate">
+      <BackToPrev href="/blog">
+        Back to blog
+      </BackToPrev>
+    </div>
+    <div class="space-y-1 my-10">
+      <div class="animate flex items-center gap-1.5">
+        <div class="font-base text-sm">
+          <FormattedDate date={new Date(post.createdAt)} />
+        </div>
+        &bull;
+        <div class="font-base text-sm">
+          {readingTime(post.content)}
+        </div>
+      </div>
+      <div class="animate text-2xl font-semibold text-black dark:text-white">
+        {post.title}
+      </div>
+    </div>
+    <article class="animate prose dark:prose-invert">
+      <div set:html={post.content} />
+    </article>
+  </Container>
+</PageLayout>
