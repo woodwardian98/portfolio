@@ -1,0 +1,11 @@
+# Netlify configuration for the frontend application (astro-nano)
+[build]
+  # This tells Netlify to run the build command from the 'astro-nano' directory.
+  base = "astro-nano"
+  
+  # The command to build your site.
+  command = "npm install && npm run build"
+  
+  # The directory to publish after the build is complete.
+  # This path is relative to the 'base' directory.
+  publish = "dist"
