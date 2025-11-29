@@ -50,7 +50,7 @@ import Container from "@components/Container.astro";
 
 <script>
   // Helper to decode JWT
-  function decodeJwt(token) {
+  function decodeJwt(token: string) {
     try {
       return JSON.parse(atob(token.split('.')[1]));
     } catch (e) {
@@ -59,7 +59,7 @@ import Container from "@components/Container.astro";
   }
 
   // Helper to render customer list
-  function renderCustomerList(customers) {
+  function renderCustomerList(customers: any[]) {
     const customerList = document.getElementById('customer-list');
     if (!customerList) return;
 
@@ -75,7 +75,7 @@ import Container from "@components/Container.astro";
       return;
     }
 
-    customers.forEach(customer => {
+    customers.forEach((customer: any) => {
       const li = document.createElement('li');
       li.className = 'p-4 border rounded-md bg-zinc-100 dark:bg-zinc-800 dark:border-zinc-700 shadow-sm';
 
